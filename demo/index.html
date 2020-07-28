@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style type="text/css">
+      div {
+        background-color: cornsilk;
+        border: 1px solid;
+        border-color: coral;
+        padding: 2px;
+        margin: 5px;
+      }
+
+      #iframe1 {
+        resize: both;
+        width: 800px;
+        height: 600px;
+      }
+    </style>
+    <script type="text/javascript">
+      function _onclick() {
+        var inp = document.getElementById("input1");
+        console.log(inp.value);
+
+        var frm = document.getElementById("iframe1");
+        frm.src = "http:/localhost:8612/" + inp.value;
+      }
+    </script>
+  </head>
+
+  <body>
+    <div>
+      <input id="input1" />
+      <button id="send1" onclick="_onclick()">Send</button>
+    </div>
+
+    <div>
+      <iframe
+        id="iframe1"
+        src="C:\\Users\\liste\\Desktop\\09143398.pdf"
+      ></iframe>
+    </div>
+  </body>
+</html>
