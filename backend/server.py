@@ -6,13 +6,57 @@ import threading
 charset = 'utf-8'
 
 
+def encode(src, encoding=charset):
+    if isinstance(src, bytes):
+        return src
+    return src.encode(encoding)
+
+
+def default_resp(request, charset=charset):
+    # Default response method
+    print('----------------------------------')
+    print(request)
+    print('==================================')
+
+    # Set content as [request]
+    content = encode(request)
+    content_length = len(content)
+    content_type = 'text/plain'
+
+    # Header
+    response = ['HTTP/1.1 200 OK',
+                'Accept-Ranges: bytes',
+                'ETag: W/"269-1482321927478"',
+                'Content-Language: zh-CN']
+    # Allow origin access
+    response.append('Access-Control-Allow-Origin: *')
+    # Content-Type
+    response.append(f'Content-Type: {content_type}; charset={charset}')
+    # Content-Length
+    response.append(f'Content-Length: {content_length} \n')
+    # Content
+    response.append(content)
+
+    return b'\n'.join([encode(e) for e in response])
+
+
 class Server():
-    def __init__(self, logger, IP='localhost', port=8612):
+    def __init__(self, logger, resp=default_resp, IP='localhost', port=8612):
         # Initialize server
+        # Running flag
         self.running = False
+
+        # Customized logger instance
         self.logger = logger
+
+        # Response method
+        self.resp = resp
+
+        # IP and port
         self.IP = IP
         self.port = port
+
+        # Report
         self.logger.info('Server is initialized.')
 
     def start(self):
@@ -56,12 +100,9 @@ class Server():
             request = connection.recv(65536).decode()
             length = len(request)
             self.logger.info(f'{name} receives {length} bytes')
-            print('----------------------------------')
-            print(request)
-            print('==================================')
 
             # Parse request
-            content = self._mk_resp('text/plain', request)
+            content = self.resp(request)
 
             # Send content
             self._safe_send(content, connection, name)
@@ -73,35 +114,9 @@ class Server():
             connection.close()
             self.logger.info(f'{name} closed')
 
-    def _encode(self, src, encoding=charset):
-        if isinstance(src, bytes):
-            return src
-        return src.encode(encoding)
-
-    def _mk_resp(self, type, content):
-        # Make legal response of [content] as [type]
-        content = self._encode(content)
-        length = len(content)
-
-        # Header
-        response = ['HTTP/1.1 200 OK',
-                    'Accept-Ranges: bytes',
-                    'ETag: W/"269-1482321927478"',
-                    'Content-Language: zh-CN']
-        # Allow origin access
-        response.append('Access-Control-Allow-Origin: *')
-        # Content-Type
-        response.append(f'Content-Type: {type}; charset={charset}')
-        # Content-Length
-        response.append(f'Content-Length: {length} \n')
-        # Content
-        response.append(content)
-
-        return b'\n'.join([self._encode(e) for e in response])
-
     def _safe_send(self, content, connection, name=None):
         # Send [content] use [connection]
-        content = self._encode(content)
+        content = encode(content)
         length = len(content)
         connection.sendall(content)
         self.logger.info(f'{name} sent {length} bytes')

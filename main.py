@@ -1,4 +1,5 @@
 import time
+import webbrowser
 from local_toolbox import Server, Logger
 
 
@@ -11,6 +12,8 @@ if __name__ == '__main__':
     print(time.ctime())
 
     server.start()
+
+    webbrowser.open('.\\demo\\index.html')
 
     while True:
         if input('>> ') == 'q':
