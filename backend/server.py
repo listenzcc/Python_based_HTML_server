@@ -1,5 +1,4 @@
 import socket
-import urllib.parse
 import threading
 
 
