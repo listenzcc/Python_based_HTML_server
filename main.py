@@ -1,11 +1,11 @@
 import time
 import webbrowser
-from local_toolbox import Server, Logger
 
+# from local_toolbox import Server, Logger
+# logger = Logger(name='PHB', path='logger.log').logger
+# server = Server(logger=logger)
 
-logger = Logger(name='PHB', path='logger.log').logger
-
-server = Server(logger=logger)
+from backend import server
 
 if __name__ == '__main__':
     print('Python_based HTML backend starts.')
